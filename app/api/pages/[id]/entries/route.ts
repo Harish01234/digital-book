@@ -5,7 +5,7 @@ import Page from "@/models/page";
 // ------------------------ CREATE ENTRY ------------------------
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   const { id } = context.params;
 
@@ -14,7 +14,6 @@ export async function POST(
     const body = await request.json();
     const { no, money, interest, date } = body;
 
-    // Validate required fields
     if (no === undefined || money === undefined) {
       return NextResponse.json(
         { success: false, error: "Fields 'no' and 'money' are required." },
@@ -22,7 +21,6 @@ export async function POST(
       );
     }
 
-    // Check if page exists
     const page = await Page.findById(id);
     if (!page) {
       return NextResponse.json(
@@ -31,7 +29,6 @@ export async function POST(
       );
     }
 
-    // Create new entry
     const newEntry = {
       no: Number(no),
       money: Number(money),
@@ -42,10 +39,7 @@ export async function POST(
     page.entries.push(newEntry);
     await page.save();
 
-    return NextResponse.json(
-      { success: true, data: page },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true, data: page }, { status: 201 });
   } catch (error) {
     console.error("POST /entries error:", error);
     return NextResponse.json(
@@ -58,7 +52,7 @@ export async function POST(
 // ------------------------ UPDATE ENTRY ------------------------
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   const { id } = context.params;
 
@@ -75,29 +69,25 @@ export async function PUT(
     }
 
     const page = await Page.findById(id);
-    if (!page) {
+    if (!page)
       return NextResponse.json(
         { success: false, error: "Page not found." },
         { status: 404 }
       );
-    }
 
     const entry = (page.entries as any).id(entryId);
-    if (!entry) {
+    if (!entry)
       return NextResponse.json(
         { success: false, error: "Entry not found." },
         { status: 404 }
       );
-    }
 
-    // Update entry fields
     if (no !== undefined) entry.no = Number(no);
     if (money !== undefined) entry.money = Number(money);
     if (interest !== undefined) entry.interest = Number(interest);
     if (date !== undefined) entry.date = new Date(date);
 
     await page.save();
-
     return NextResponse.json({ success: true, data: page });
   } catch (error) {
     console.error("PUT /entries error:", error);
@@ -111,7 +101,7 @@ export async function PUT(
 // ------------------------ DELETE ENTRY ------------------------
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   const { id } = context.params;
 
@@ -128,20 +118,18 @@ export async function DELETE(
     }
 
     const page = await Page.findById(id);
-    if (!page) {
+    if (!page)
       return NextResponse.json(
         { success: false, error: "Page not found." },
         { status: 404 }
       );
-    }
 
     const entry = (page.entries as any).id(entryId);
-    if (!entry) {
+    if (!entry)
       return NextResponse.json(
         { success: false, error: "Entry not found." },
         { status: 404 }
       );
-    }
 
     entry.deleteOne();
     await page.save();
