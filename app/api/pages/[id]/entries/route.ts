@@ -3,10 +3,7 @@ import dbConnect from "@/lib/db";
 import Page from "@/models/page";
 
 // ------------------------ CREATE ENTRY ------------------------
-export async function POST(
-  request: NextRequest,
-  context: { params: any}
-) {
+export async function POST(request: NextRequest, context: any) {
   const { id } = context.params;
 
   try {
@@ -50,10 +47,7 @@ export async function POST(
 }
 
 // ------------------------ UPDATE ENTRY ------------------------
-export async function PUT(
-  request: NextRequest,
-  context: { params: Record<string, string> }
-) {
+export async function PUT(request: NextRequest, context: any) {
   const { id } = context.params;
 
   try {
@@ -69,18 +63,20 @@ export async function PUT(
     }
 
     const page = await Page.findById(id);
-    if (!page)
+    if (!page) {
       return NextResponse.json(
         { success: false, error: "Page not found." },
         { status: 404 }
       );
+    }
 
     const entry = (page.entries as any).id(entryId);
-    if (!entry)
+    if (!entry) {
       return NextResponse.json(
         { success: false, error: "Entry not found." },
         { status: 404 }
       );
+    }
 
     if (no !== undefined) entry.no = Number(no);
     if (money !== undefined) entry.money = Number(money);
@@ -99,10 +95,7 @@ export async function PUT(
 }
 
 // ------------------------ DELETE ENTRY ------------------------
-export async function DELETE(
-  request: NextRequest,
-  context: { params: Record<string, string> }
-) {
+export async function DELETE(request: NextRequest, context: any) {
   const { id } = context.params;
 
   try {
@@ -118,18 +111,20 @@ export async function DELETE(
     }
 
     const page = await Page.findById(id);
-    if (!page)
+    if (!page) {
       return NextResponse.json(
         { success: false, error: "Page not found." },
         { status: 404 }
       );
+    }
 
     const entry = (page.entries as any).id(entryId);
-    if (!entry)
+    if (!entry) {
       return NextResponse.json(
         { success: false, error: "Entry not found." },
         { status: 404 }
       );
+    }
 
     entry.deleteOne();
     await page.save();
