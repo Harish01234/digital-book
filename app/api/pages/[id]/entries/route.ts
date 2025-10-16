@@ -5,7 +5,7 @@ import Page from "@/models/page";
 // ------------------------ CREATE ENTRY ------------------------
 export async function POST(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: { params: any}
 ) {
   const { id } = context.params;
 
