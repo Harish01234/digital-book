@@ -1,35 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/db';
-import Page from '@/models/page';
+import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/db";
+import Page from "@/models/page";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// ------------------------ GET PAGE BY ID ------------------------
+export async function GET(request: NextRequest, context: any) {
+  const { id } = context.params;
+
   try {
     await dbConnect();
-    const page = await Page.findById(params.id);
+    const page = await Page.findById(id);
 
     if (!page) {
       return NextResponse.json(
-        { success: false, error: 'Page not found' },
+        { success: false, error: "Page not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ success: true, data: page });
   } catch (error) {
+    console.error("GET /pages/:id error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch page' },
+      { success: false, error: "Failed to fetch page" },
       { status: 500 }
     );
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// ------------------------ UPDATE PAGE ------------------------
+export async function PUT(request: NextRequest, context: any) {
+  const { id } = context.params;
+
   try {
     await dbConnect();
     const body = await request.json();
@@ -37,52 +38,54 @@ export async function PUT(
 
     if (!title || !type) {
       return NextResponse.json(
-        { success: false, error: 'Title and type are required' },
+        { success: false, error: "Title and type are required" },
         { status: 400 }
       );
     }
 
     const page = await Page.findByIdAndUpdate(
-      params.id,
+      id,
       { title, type },
       { new: true, runValidators: true }
     );
 
     if (!page) {
       return NextResponse.json(
-        { success: false, error: 'Page not found' },
+        { success: false, error: "Page not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ success: true, data: page });
   } catch (error) {
+    console.error("PUT /pages/:id error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update page' },
+      { success: false, error: "Failed to update page" },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// ------------------------ DELETE PAGE ------------------------
+export async function DELETE(request: NextRequest, context: any) {
+  const { id } = context.params;
+
   try {
     await dbConnect();
-    const page = await Page.findByIdAndDelete(params.id);
+    const page = await Page.findByIdAndDelete(id);
 
     if (!page) {
       return NextResponse.json(
-        { success: false, error: 'Page not found' },
+        { success: false, error: "Page not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ success: true, data: page });
   } catch (error) {
+    console.error("DELETE /pages/:id error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete page' },
+      { success: false, error: "Failed to delete page" },
       { status: 500 }
     );
   }
